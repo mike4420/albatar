@@ -418,6 +418,9 @@ class Method_bitwise(Method_Blind):
 
       logger.debug('char: %r (%d)' % (chr(char), char))
 
+      if char == 0:
+        break
+
       if char >= 127:
         continue
 
@@ -430,9 +433,6 @@ class Method_bitwise(Method_Blind):
           requester = self.make_requester()
           logger.debug('could not confirm char')
           continue
-
-      if char == 0:
-        break
 
       sys.stdout.write('%s' % chr(char))
       sys.stdout.flush()
