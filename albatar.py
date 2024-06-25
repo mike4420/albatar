@@ -72,6 +72,10 @@ def T(s, **kwargs):
 def inject(payload, d):
   return OrderedDict((k, v.replace('${injection}', payload)) for k, v in d.items())
 
+#JSON
+def json_inject(payload, d):
+  return d.replace('${injection}', payload)
+
 class Timing:
   def __enter__(self):
     self.t1 = time()
@@ -92,6 +96,8 @@ class Requester_HTTP_Base(object):
     self.scheme, self.host, self.path, self.params, self.query, self.fragment = urlparse(url)
     self.method = method
     self.query = OrderedDict(parse_qsl(self.query, True))
+    #JSON
+    #self.body = body    
     self.body = OrderedDict(parse_qsl(body, True))
     self.headers = OrderedDict(h.split(': ', 1) for h in headers)
     self.auth_type = auth_type
@@ -159,6 +165,8 @@ class Requester_HTTP_requests(Requester_HTTP_Base):
     headers = inject(payload, headers)
 
     if method.upper() == 'POST':
+      #JSON
+      #headers['Content-Type'] = 'application/json'
       headers['Content-Type'] = 'application/x-www-form-urlencoded'
 
     url = urlunparse((scheme, host, path, params, None, fragment))
@@ -243,6 +251,8 @@ class Requester_HTTP_pycurl(Requester_HTTP_Base):
 
     headers = inject(payload, headers)
     query = urlencode(inject(payload, query))
+    #JSON
+    #body = json_inject(payload, body)
     body = urlencode(inject(payload, body))
 
     method = method.upper()
